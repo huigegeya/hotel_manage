@@ -1,0 +1,43 @@
+import axios from "axios";
+//导入nprogress
+import NProgress from "nprogress";
+//导入nprogress的样式
+import "nprogress/nprogress.css";
+import { BASE_URL } from "@/config/base_url";
+
+//创建一个axios实例
+const instance = axios.create({
+  baseURL: BASE_URL,
+  timeout: 3000,
+  headers: { "X-Custom-Header": "foobar" },
+});
+
+// 添加请求拦截器
+instance.interceptors.request.use(
+  function (config) {
+    // 在发送请求之前做些什么
+    NProgress.start();
+    return config;
+  },
+  function (error) {
+    // 对请求错误做些什么
+    NProgress.done();
+    return Promise.reject(error);
+  }
+);
+
+// 添加响应拦截器
+instance.interceptors.response.use(
+  function (response) {
+    // 2xx 范围内的状态码都会触发该函数。
+    // 对响应数据做点什么
+    NProgress.done();
+    return response;
+  },
+  function (error) {
+    // 超出 2xx 范围的状态码都会触发该函数。
+    // 对响应错误做点什么
+    NProgress.done();
+    return Promise.reject(error);
+  }
+);
